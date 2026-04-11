@@ -19,11 +19,8 @@ build:
   skip:
     - ${{ true if match(python, "<3.11") }}
   script:
-    # Want to use the conda pkg-config, not the mingw one
     - if: win
-      then:
-        - del /s /q ${{ BUILD_PREFIX }}\Library\mingw-w64\bin\pkg-config*
-        - set "CMAKE_ARGS=-DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX%"
+      then: set "CMAKE_ARGS=-DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX%"
     - ${{ PYTHON }} -m pip install . --no-deps -vv
 
 requirements:
