@@ -16,46 +16,37 @@ source:
 
 build:
   number: 1
-  skip:  # [py<=39]
+  skip:
     - ${{ true if match(python, "<=3.9") }}
-    #detect_binary_files_with_prefix: False  # [osx]
-    #binary_relocation: False  # [osx]
   script:
     # Want to use the conda pkg-config, not the mingw one
     - if: win
-      then: del /s /q ${{ BUILD_PREFIX }}\Library\mingw-w64\bin\pkg-config*
-    - if: win
-      then: set "CMAKE_ARGS=-DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX%"
+      then:
+        - del /s /q ${{ BUILD_PREFIX }}\Library\mingw-w64\bin\pkg-config*
+        - set "CMAKE_ARGS=-DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX%"
     - ${{ PYTHON }} -m pip install . --no-deps -vv
 
 requirements:
   build:
     - if: build_platform != target_platform
-      then: python
-    - if: build_platform != target_platform
-      then: cross-python_${{ target_platform }}
-    - if: build_platform != target_platform
-      then: cmake
-    - if: build_platform != target_platform
-      then: cmake-build-extension
-    - if: build_platform != target_platform
-      then: pkg-config
+      then:
+        - python
+        - cross-python_${{ target_platform }}
+        - cmake
+        - cmake-build-extension
+        - pkg-config
     - if: not win
-      then: make
-    - if: not win
-      then: ${{ stdlib('c') }}
-    - if: not win
-      then: ${{ compiler('c') }}
-    - if: not win
-      then: ${{ compiler('fortran') }}
+      then:
+        - make
+        - ${{ stdlib('c') }}
+        - ${{ compiler('c') }}
+        - ${{ compiler('fortran') }}
     - if: win
-      then: ${{ compiler('m2w64_fortran') }}
-    - if: win
-      then: ${{ compiler('m2w64_c') }}
+      then:
+        - ${{ compiler('m2w64_fortran') }}
+        - ${{ compiler('m2w64_c') }}
   host:
     - cmake-build-extension
-    # For some reason adding this one adds odd cmake arguments that are unrecognized and errors
-    #- libpython                                  # [win]
     - numpy
     - pip
     - python
@@ -74,6 +65,10 @@ requirements:
     - pyzmq
     - scipy
     - wisdem >=3.16
+    - orbit-nrel
+    - openfast_io
+    - windIO
+    - jsonmerge
 
 tests:
   - python:
@@ -96,7 +91,6 @@ tests:
         then: test -f ${PREFIX}/lib/libdiscon$SHLIB_EXT
       - if: win
         then: if not exist %LIBRARY_LIB%\\libdiscon.dll exit 1
-      - pip install orbit-nrel openfast_io windIO jsonmerge
       - if: win
         then: pip install control
       - if: not aarch64
