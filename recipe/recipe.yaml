@@ -66,8 +66,8 @@ requirements:
     - scipy
     - wisdem >=3.16
     - orbit-nrel
-    - openfast_io
-    - windIO
+    - openfast-io
+    - windIO >=2.1.1
     - jsonmerge
 
 tests:
